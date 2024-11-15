@@ -1,4 +1,5 @@
 from tqdm import tqdm
+import argparse
 
 # Function to count matches in a given file
 def count_matches(file_path, generated_password_set):
@@ -17,21 +18,6 @@ def count_matches(file_path, generated_password_set):
         for password in matched_passwords:
             output_file.write(password + '\n')
     return match_count, total_count
-
-# Load generated passwords into a set
-with open("generated_passwords.txt", 'r', encoding='latin-1') as f:
-    generated_password_set = set(line.strip() for line in f)
-
-# Count matches in test_data
-test_matches, test_total = count_matches("test_data.txt", generated_password_set)
-
-
-
-# Calculate percentages
-test_percentage = (test_matches / test_total) * 100 if test_total > 0 else 0
-
-# Print the results
-print(f"Matches in test_data: {test_matches} ({test_percentage:.2f}%) out of {test_total}")
 
 
 
@@ -62,3 +48,26 @@ def count_matches_reverse(generated_file_path, test_file_path):
 
 # Print the results
 #print(f"Matches in hashcat_rockyou: {hashcat_matches} ({hashcat_percentage:.2f}%) out of {hashcat_total}")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--generated_pass_file", help="generated file", type=str, required=True)
+    parser.add_argument("--test_file", help="test_file", type=str, default=None)
+    
+    args = parser.parse_args()
+    # Load generated passwords into a set
+    with open(args.generated_pass_file, 'r', encoding='latin-1') as f:
+        generated_password_set = set(line.strip() for line in f)
+
+    # Count matches in test_data
+    test_matches, test_total = count_matches(args.test_file, generated_password_set)
+
+
+
+    # Calculate percentages
+    test_percentage = (test_matches / test_total) * 100 if test_total > 0 else 0
+
+    # Print the results
+    print(f"Matches in test_data: {test_matches} ({test_percentage:.2f}%) out of {test_total}")
+
+
